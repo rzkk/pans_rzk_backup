@@ -35,7 +35,7 @@ struct LogLine::Impl final{
 
     */
     [[nodiscard]] LogRecordView getRecord()const noexcept{
-        std::cout<<"Log_line.cpp:: getRecord()"<<__LINE__<< "  " <<m_inlineBuffer.view() << std::endl;
+        // std::cout<<"Log_line.cpp:: getRecord()"<<__LINE__<< "  " <<m_inlineBuffer.view() << std::endl;
         return {
             m_level,
             m_logger.getName(),
@@ -152,7 +152,7 @@ void LogPrintf(Logger& logger , LogLevel::Level level, std::uint32_t line, std::
     if(message_size <  inline_buffer.size()){  // 必须<  , 因为 std::vsnprintf 除了格式化结果，还需要保存一个结尾的 '\0'
         va_end(arguments_copy);
         log_line.stream().write(inline_buffer.data() , static_cast<std::streamsize>(message_size));
-        std::cout<<"LogLine::LogPrintf "<<__LINE__<<" "<< inline_buffer.data()  <<std::endl;
+        //std::cout<<"LogLine::LogPrintf "<<__LINE__<<" "<< inline_buffer.data()  <<std::endl;
         return ;   
     }
 

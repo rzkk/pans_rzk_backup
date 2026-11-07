@@ -66,7 +66,7 @@ int main(){
     会add 到这里面 std::vector<AppenderPtr> m_appenders;
 */
 
-    //PANS_LOG_DEBUG(logger) << "debug message ";
+    PANS_LOG_DEBUG(logger) << "debug message ";
 /*notes: 步骤：
 1.PANS_LOG_DEBUG(logger) => 创建一个 LogLine 对象，其内部通过 Fast Pimpl（placement new）就地构造 Impl，采集时间戳、线程 ID、线程名等元数据。
     PANS_LOG_DEBUG(logger)<< "debug message "  
@@ -99,13 +99,13 @@ int main(){
         =>  writeUnlocked(formatted_record); 
 5. 日志记录器在析构或调用 sync() 时，会将缓冲区中的日志消息刷新到目标。
 */
-    // PANS_LOG_INFO(logger) << "info message";
-    // PANS_LOG_WARN(logger) << "warning message";
-    // PANS_LOG_ERROR(logger) << "error message";
-    // PANS_LOG_FATAL(logger) << "fatal message";
-    // std::cout << "----------------------------------------------------" << std::endl;
-    //PANS_LOG_FMT_DEBUG(logger, "debug message");
-    //std::cout<<std::endl;
+    PANS_LOG_INFO(logger) << "info message";
+    PANS_LOG_WARN(logger) << "warning message";
+    PANS_LOG_ERROR(logger) << "error message";
+    PANS_LOG_FATAL(logger) << "fatal message";
+    std::cout << "----------------------------------------------------" << std::endl;
+    PANS_LOG_FMT_DEBUG(logger, "debug message");
+    std::cout<<std::endl;
     PANS_LOG_FMT_DEBUG(logger, "debug message%d , %f " , 10 , 3.333333333 );
 /*notes: 
     PANS_LOG_FMT_DEBUG(logger, "debug message");=> LogPrintf(*pans_log_logger , pans_log_level , __LINE__, __FILE__, (format)__VA_OPT__(,) __VA_ARGS__)
@@ -117,22 +117,22 @@ int main(){
             这个缓冲区是栈上分配的，生命周期与 LogLine 对象一致。
         3. 析构时， 调用submit ，先转成 formatted_record ， 再写入到实际的日志目标（如文件、标准输出等）。
     */
-    // PANS_LOG_FMT_INFO(logger, "info message");
-    // PANS_LOG_FMT_WARN(logger, "warn message");
-    // PANS_LOG_FMT_ERROR(logger, "error message");
-    // PANS_LOG_FMT_FATAL(logger, "fatal message");
-    // char c = 'a';
-    // int i = 42;
-    // const char msg1[] = "hello";
-    // const std::string msg2 = "world";
-    // const std::string_view msg3 = "pans 磐石";
+    PANS_LOG_FMT_INFO(logger, "info message");
+    PANS_LOG_FMT_WARN(logger, "warn message");
+    PANS_LOG_FMT_ERROR(logger, "error message");
+    PANS_LOG_FMT_FATAL(logger, "fatal message");
+    char c = 'a';
+    int i = 42;
+    const char msg1[] = "hello";
+    const std::string msg2 = "world";
+    const std::string_view msg3 = "pans 磐石";
 
-    // auto g_logger = logger;
-    // std::cout << "----------------------------------------------------" << std::endl;
-    // LOG_INFO << "c=" << c << " i=" << i << " msg1: " << msg1 << " msg2: " << msg2 << " msg3: " << msg3;
-    // PANS_LOG_FMT_INFO(logger, "c=%c i=%d msg1: %s msg2: %s msg3: %s", c, i, msg1, msg2.c_str(), msg3.data());
+    auto g_logger = logger;
+    std::cout << "----------------------------------------------------" << std::endl;
+    LOG_INFO << "c=" << c << " i=" << i << " msg1: " << msg1 << " msg2: " << msg2 << " msg3: " << msg3;
+    PANS_LOG_FMT_INFO(logger, "c=%c i=%d msg1: %s msg2: %s msg3: %s", c, i, msg1, msg2.c_str(), msg3.data());
 
-    // logger->sync();
+    logger->sync();
     // std::cout << "\nThe same records were written to: " << output_path << '\n';
 
     return 0;

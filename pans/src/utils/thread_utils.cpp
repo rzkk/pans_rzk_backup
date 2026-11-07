@@ -34,7 +34,7 @@
 
 namespace pans {
 
-namespace {
+namespace { // 匿名空间
 
 #if defined(_WIN32)
 struct LocalFreeDeleter
@@ -49,11 +49,13 @@ struct LocalFreeDeleter
 };
 #endif
 //处理跨平台差异
+//读 OS 层线程名
 [[nodiscard]] std::string GetNativeThreadName() noexcept
 {
     try
     {
 #if defined(__linux__)
+        // 内核给每个线程名固定 16 字节缓冲（15 个有效字符 + '\0'），所以 std::array<char,16> 是精确匹配，不多不少；
         std::array<char, 16> native_name{};
         if(pthread_getname_np(pthread_self(), native_name.data(), native_name.size()) != 0)
         {
@@ -108,14 +110,20 @@ void SetNativeThreadName(std::string_view name) noexcept
 }
 
 constexpr std::string_view DEFAULT_THREAD_NAME = "UNKNOWN";
-thread_local std::string t_thread_name = GetNativeThreadName();
+thread_local std::string t_thread_name = GetNativeThreadName(); // 进程内缓存
 
 } // namespace
 
+//拿到操作系统级线程 ID（数字）
 u64 GetThreadId() noexcept
 {// 线程局部静态变量 缓存系统调用的结果 ， 避免多次昂贵的系统调用
 #if defined(__linux__)
     static thread_local const u64 THREAD_ID = static_cast<u64>(::syscall(SYS_gettid));
+/*notes:
+     std::this_thread::get_id()？它返回的是标准库的代理对象 thread::id，不是内核 TID。
+     在 Linux 上它是 pthread 内部指针/句柄，与 top、htop、gdb、strace 里看到的 PID/TID 对不上号。
+     而 syscall(SYS_gettid) 返回内核真实 TID，日志里打出来就能直接去监控工具里过滤——这是可观测性的硬需求。
+*/
 #elif defined(_WIN32)
     static thread_local const u64 THREAD_ID = static_cast<u64>(::GetCurrentThreadId());
 #else
@@ -124,6 +132,7 @@ u64 GetThreadId() noexcept
     return THREAD_ID;
 }
 
+//给当前线程起名（同时写 OS 和进程内缓存）
 void SetThreadName(std::string name)
 {
     if(name.empty())
@@ -136,7 +145,7 @@ void SetThreadName(std::string name)
     t_thread_name = std::move(name);
     SetNativeThreadName(t_thread_name);
 }
-
+//读当前线程名（零拷贝）
 std::string_view GetThreadName() noexcept
 {
     return t_thread_name;
