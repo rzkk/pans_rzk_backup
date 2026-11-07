@@ -1,5 +1,5 @@
-[submodule "thrid_party/yaml-cpp"]
-	path = thrid_party/yaml-cpp
+[submodule "third_party/yaml-cpp"]
+	path = third_party/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
 	branch = master
 [submodule "third_party/abseil-cpp"]
